@@ -100,13 +100,9 @@ A specialized tool to improve the quality of questions asked during mentorship:
 - Web fonts (Google Fonts - Sarabun, Prompt)
 - LocalStorage for state management
 
-## 📸 Screenshots
-
-*[Suggestion: Add screenshots of each tool in action here]*
-
 ## 📄 License
 
-[Include your license information here]
+MIT License
 
 ## 🙏 Acknowledgments
 
