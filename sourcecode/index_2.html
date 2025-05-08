@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School of Leadership - แพลตฟอร์มโค้ชชิ่ง</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .step-container {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .step-container.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn {
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-message {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      animation-fill-mode: forwards;
+    }
+
+    .chat-message.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .progress-bar {
+      height: 4px;
+      background-color: #e9ecef;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #4F46E5;
+      transition: width 0.5s ease;
+    }
+
+    textarea {
+      resize: none;
+      transition: border-color 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .feedback-container {
+      border-left: 3px solid #4F46E5;
+      padding-left: 1rem;
+      margin: 1rem 0;
+      background-color: #f3f4f6;
+      padding: 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-indigo-600 mb-2">School of Leadership</h1>
+      <p class="text-gray-600">แพลตฟอร์มโค้ชชิ่งด้วยวิธี T-GROW</p>
+
+      <div class="progress-bar mt-8">
+        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+      </div>
+
+      <div class="flex justify-center space-x-2 text-sm text-gray-500">
+        <span id="step-topic" class="font-medium text-indigo-600">Topic</span>
+        <span>→</span>
+        <span id="step-goal">Goal</span>
+        <span>→</span>
+        <span id="step-reality">Reality</span>
+        <span>→</span>
+        <span id="step-options">Options</span>
+        <span>→</span>
+        <span id="step-will">Will</span>
+        <span>→</span>
+        <span id="step-coach">Coach</span>
+        <span>→</span>
+        <span id="step-reflection">Reflection</span>
+      </div>
+    </header>
+
+    <!-- Topic Step -->
+    <div id="topic-step" class="step-container active">
+      <h2 class="text-2xl font-semibold mb-4">Topic - หัวข้อที่ต้องการพูดคุย</h2>
+      <p class="text-gray-600 mb-6">คุณต้องการพูดคุยเกี่ยวกับเรื่องอะไรในวันนี้? กรุณาระบุหัวข้อที่คุณอยากได้รับการโค้ช
+      </p>
+
+      <textarea id="topic-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+        placeholder="ฉันต้องการพูดคุยเกี่ยวกับ..."></textarea>
+
+      <div id="topic-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="topic-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <span></span>
+        <button id="submit-topic"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งหัวข้อ</button>
+      </div>
+
+      <div id="topic-refinement" class="mt-6 hidden">
+        <h3 class="text-lg font-medium mb-2">ปรับปรุงหัวข้อของคุณ</h3>
+        <p class="text-gray-600 mb-4">คุณสามารถปรับปรุงหัวข้อของคุณได้อีก <span id="topic-refinements-left">2</span>
+          ครั้ง</p>
+
+        <textarea id="topic-refinement-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+          placeholder="ฉันต้องการปรับปรุงหัวข้อเป็น..."></textarea>
+
+        <div class="flex justify-between">
+          <button id="next-to-goal"
+            class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hidden">ข้ามไปยังเป้าหมาย</button>
+          <button id="refine-topic"
+            class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ปรับปรุงหัวข้อ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goal Step -->
+    <div id="goal-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Goal - เป้าหมายของคุณ</h2>
+      <p class="text-gray-600 mb-2">คุณต้องการบรรลุอะไรจากการพูดคุยในวันนี้?</p>
+      <p class="text-gray-600 mb-6">กรุณาระบุเป้าหมายที่ชัดเจน วัดผลได้ และเป็นไปได้</p>
+
+      <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-medium mb-2">หัวข้อที่เลือก:</h3>
+        <p id="selected-topic" class="text-gray-700"></p>
+      </div>
+
+      <textarea id="goal-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+        placeholder="เป้าหมายของฉันคือ..."></textarea>
+
+      <div id="goal-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="goal-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-topic"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปหัวข้อ</button>
+        <button id="submit-goal"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งเป้าหมาย</button>
+      </div>
+
+      <div id="goal-refinement" class="mt-6 hidden">
+        <h3 class="text-lg font-medium mb-2">ปรับปรุงเป้าหมายของคุณ</h3>
+        <p class="text-gray-600 mb-4">คุณสามารถปรับปรุงเป้าหมายของคุณได้อีก <span id="goal-refinements-left">2</span>
+          ครั้ง</p>
+
+        <textarea id="goal-refinement-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+          placeholder="ฉันต้องการปรับปรุงเป้าหมายเป็น..."></textarea>
+
+        <div class="flex justify-between">
+          <button id="next-to-reality"
+            class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hidden">ข้ามไปยังสถานการณ์ปัจจุบัน</button>
+          <button id="refine-goal"
+            class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ปรับปรุงเป้าหมาย</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reality Step -->
+    <div id="reality-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Reality - สถานการณ์ปัจจุบัน</h2>
+      <p class="text-gray-600 mb-6">สถานการณ์ปัจจุบันของคุณเป็นอย่างไร? อะไรเป็นความท้าทายหรืออุปสรรคที่คุณกำลังเผชิญ?
+      </p>
+
+      <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-medium mb-2">เป้าหมายที่เลือก:</h3>
+        <p id="selected-goal" class="text-gray-700"></p>
+      </div>
+
+      <textarea id="reality-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+        placeholder="สถานการณ์ปัจจุบันของฉันคือ..."></textarea>
+
+      <div id="reality-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="reality-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-goal"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปเป้าหมาย</button>
+        <button id="submit-reality"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งสถานการณ์ปัจจุบัน</button>
+      </div>
+
+      <div id="reality-refinement" class="mt-6 hidden">
+        <h3 class="text-lg font-medium mb-2">ปรับปรุงสถานการณ์ปัจจุบันของคุณ</h3>
+        <p class="text-gray-600 mb-4">คุณสามารถปรับปรุงสถานการณ์ปัจจุบันของคุณได้อีก <span
+            id="reality-refinements-left">2</span> ครั้ง</p>
+
+        <textarea id="reality-refinement-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+          placeholder="ฉันต้องการปรับปรุงสถานการณ์ปัจจุบันเป็น..."></textarea>
+
+        <div class="flex justify-between">
+          <button id="next-to-options"
+            class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hidden">ข้ามไปยังทางเลือก</button>
+          <button id="refine-reality"
+            class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ปรับปรุงสถานการณ์ปัจจุบัน</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Options Step -->
+    <div id="options-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Options - ทางเลือกของคุณ</h2>
+      <p class="text-gray-600 mb-6">คุณมีทางเลือกอะไรบ้างในการบรรลุเป้าหมายของคุณ? กรุณาระบุทางเลือกที่เป็นไปได้</p>
+
+      <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-medium mb-2">สถานการณ์ปัจจุบันที่เลือก:</h3>
+        <p id="selected-reality" class="text-gray-700"></p>
+      </div>
+
+      <textarea id="options-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+        placeholder="ทางเลือกของฉันคือ..."></textarea>
+
+      <div id="options-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="options-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-reality"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปสถานการณ์ปัจจุบัน</button>
+        <button id="submit-options"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งทางเลือก</button>
+      </div>
+
+      <div id="options-refinement" class="mt-6 hidden">
+        <h3 class="text-lg font-medium mb-2">ปรับปรุงทางเลือกของคุณ</h3>
+        <p class="text-gray-600 mb-4">คุณสามารถปรับปรุงทางเลือกของคุณได้อีก <span id="options-refinements-left">2</span>
+          ครั้ง</p>
+
+        <textarea id="options-refinement-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+          placeholder="ฉันต้องการปรับปรุงทางเลือกเป็น..."></textarea>
+
+        <div class="flex justify-between">
+          <button id="next-to-will"
+            class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hidden">ข้ามไปยังแผนปฏิบัติ</button>
+          <button id="refine-options"
+            class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ปรับปรุงทางเลือก</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Will Step -->
+    <div id="will-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Will - แผนปฏิบัติการ</h2>
+      <p class="text-gray-600 mb-6">คุณจะทำอะไรต่อไป? กรุณาระบุแผนปฏิบัติการที่ชัดเจน</p>
+
+      <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-medium mb-2">ทางเลือกที่เลือก:</h3>
+        <p id="selected-options" class="text-gray-700"></p>
+      </div>
+
+      <textarea id="will-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+        placeholder="แผนปฏิบัติการของฉันคือ..."></textarea>
+
+      <div id="will-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="will-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-options"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปทางเลือก</button>
+        <button id="submit-will"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งแผนปฏิบัติการ</button>
+      </div>
+
+      <div id="will-refinement" class="mt-6 hidden">
+        <h3 class="text-lg font-medium mb-2">ปรับปรุงแผนปฏิบัติการของคุณ</h3>
+        <p class="text-gray-600 mb-4">คุณสามารถปรับปรุงแผนปฏิบัติการของคุณได้อีก <span
+            id="will-refinements-left">2</span> ครั้ง</p>
+
+        <textarea id="will-refinement-input" class="w-full p-4 border rounded-lg mb-4 h-32"
+          placeholder="ฉันต้องการปรับปรุงแผนปฏิบัติการเป็น..."></textarea>
+
+        <div class="flex justify-between">
+          <button id="next-to-coach"
+            class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hidden">ข้ามไปยังโค้ช</button>
+          <button id="refine-will"
+            class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ปรับปรุงแผนปฏิบัติการ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coach Step -->
+    <div id="coach-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Coach - การสนทนากับโค้ช</h2>
+      <p class="text-gray-600 mb-6">ลองสนทนากับโค้ชเสมือนจริงเพื่อปรึกษาเกี่ยวกับแผนของคุณ</p>
+
+      <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-medium mb-2">สรุป T-GROW ของคุณ:</h3>
+        <p><strong>หัวข้อ:</strong> <span id="summary-topic" class="text-gray-700"></span></p>
+        <p><strong>เป้าหมาย:</strong> <span id="summary-goal" class="text-gray-700"></span></p>
+        <p><strong>สถานการณ์ปัจจุบัน:</strong> <span id="summary-reality" class="text-gray-700"></span></p>
+        <p><strong>ทางเลือก:</strong> <span id="summary-options" class="text-gray-700"></span></p>
+        <p><strong>แผนปฏิบัติการ:</strong> <span id="summary-will" class="text-gray-700"></span></p>
+      </div>
+
+      <div id="chat-container" class="border rounded-lg p-4 mb-6 bg-white">
+        <div id="chat-messages" class="space-y-4 mb-4">
+          <!-- Chat messages will be added here dynamically -->
+        </div>
+
+        <div class="flex space-x-2">
+          <textarea id="chat-input" class="flex-grow p-3 border rounded-lg"
+            placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+          <button id="send-message" class="btn bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium">ส่ง</button>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-will"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปแผนปฏิบัติการ</button>
+        <button id="next-to-reflection"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hidden">ไปยังการสะท้อนคิด</button>
+      </div>
+    </div>
+
+    <!-- Reflection Step -->
+    <div id="reflection-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">Reflection - การสะท้อนคิด</h2>
+      <p class="text-gray-600 mb-6">กรุณาสะท้อนคิดว่าคุณได้เรียนรู้อะไรจากกระบวนการนี้ และคุณจะนำไปประยุกต์ใช้อย่างไร
+      </p>
+
+      <textarea id="reflection-input" class="w-full p-4 border rounded-lg mb-4 h-48"
+        placeholder="สิ่งที่ฉันได้เรียนรู้จากกระบวนการนี้คือ..."></textarea>
+
+      <div id="reflection-feedback-container" class="feedback-container hidden">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="reflection-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button id="back-to-coach"
+          class="btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium">กลับไปโค้ช</button>
+        <button id="submit-reflection"
+          class="btn bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium">ส่งการสะท้อนคิด</button>
+      </div>
+    </div>
+
+    <!-- Final Step -->
+    <div id="final-step" class="step-container">
+      <h2 class="text-2xl font-semibold mb-4">สรุปและข้อเสนอแนะ</h2>
+
+      <div class="bg-indigo-50 p-6 rounded-lg mb-6 border border-indigo-100">
+        <h3 class="text-lg font-medium text-indigo-700 mb-4">สรุปกระบวนการ T-GROW ของคุณ</h3>
+
+        <div class="space-y-3">
+          <div>
+            <h4 class="font-medium">หัวข้อ (Topic)</h4>
+            <p id="final-topic" class="text-gray-700"></p>
+          </div>
+
+          <div>
+            <h4 class="font-medium">เป้าหมาย (Goal)</h4>
+            <p id="final-goal" class="text-gray-700"></p>
+          </div>
+
+          <div>
+            <h4 class="font-medium">สถานการณ์ปัจจุบัน (Reality)</h4>
+            <p id="final-reality" class="text-gray-700"></p>
+          </div>
+
+          <div>
+            <h4 class="font-medium">ทางเลือก (Options)</h4>
+            <p id="final-options" class="text-gray-700"></p>
+          </div>
+
+          <div>
+            <h4 class="font-medium">แผนปฏิบัติการ (Will)</h4>
+            <p id="final-will" class="text-gray-700"></p>
+          </div>
+
+          <div>
+            <h4 class="font-medium">การสะท้อนคิด (Reflection)</h4>
+            <p id="final-reflection" class="text-gray-700"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback-container">
+        <h3 class="font-medium mb-2">ข้อเสนอแนะจากระบบ</h3>
+        <p id="final-feedback" class="text-gray-700"></p>
+      </div>
+
+      <div class="flex justify-center mt-8">
+        <button id="restart-process"
+          class="btn bg-indigo-600 text-white px-8 py-3 rounded-lg font-medium">เริ่มกระบวนการใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    const state = {
+      currentStep: 'topic',
+      progress: 0,
+      steps: ['topic', 'goal', 'reality', 'options', 'will', 'coach', 'reflection', 'final'],
+      refinements: {
+        topic: 2,
+        goal: 2,
+        reality: 2,
+        options: 2,
+        will: 2
+      },
+      data: {
+        topic: '',
+        goal: '',
+        reality: '',
+        options: '',
+        will: '',
+        reflection: '',
+        chatMessages: []
+      }
+    };
+
+    // API function
+    async function sendToAPI(prompt, systemMessage) {
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': '[X]'
+          },
+          body: JSON.stringify({
+            model: "gpt-4.1-mini",
+            messages: [
+              {
+                role: "system",
+                content: systemMessage
+              },
+              {
+                role: "user",
+                content: prompt
+              }
+            ],
+            temperature: 0.7,
+            max_tokens: 1024,
+            top_p: 1
+          })
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('API Error:', errorData);
+          throw new Error(`API request failed: ${errorData.error?.message || 'Unknown error'}`);
+        }
+        const data = await response.json();
+        return data.choices[0].message.content;
+      } catch (error) {
+        console.error('Error:', error);
+        return `พบข้อผิดพลาด: ${error.message}. กรุณาลองอีกครั้ง`;
+      }
+    }
+
+    // Helper functions
+    function updateProgress() {
+      const stepIndex = state.steps.indexOf(state.currentStep);
+      const progress = (stepIndex / (state.steps.length - 1)) * 100;
+
+      document.getElementById('progressBar').style.width = `${progress}%`;
+
+      // Update step indicators
+      state.steps.forEach((step, index) => {
+        const element = document.getElementById(`step-${step}`);
+        if (index < stepIndex) {
+          element.classList.add('text-indigo-600');
+          element.classList.add('font-medium');
+        } else if (index === stepIndex) {
+          element.classList.add('text-indigo-600');
+          element.classList.add('font-medium');
+        } else {
+          element.classList.remove('text-indigo-600');
+          element.classList.remove('font-medium');
+        }
+      });
+    }
+
+    function showStep(stepName) {
+      // Hide all steps
+      document.querySelectorAll('.step-container').forEach(step => {
+        step.classList.remove('active');
+      });
+
+      // Show the current step
+      const currentStep = document.getElementById(`${stepName}-step`);
+      if (currentStep) {
+        currentStep.classList.add('active');
+      }
+
+      state.currentStep = stepName;
+      updateProgress();
+    }
+
+    async function getFeedback(stepName, content) {
+      let systemMessage = '';
+
+      switch (stepName) {
+        case 'topic':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับหัวข้อที่ผู้เรียนต้องการพูดคุย ข้อเสนอแนะควรช่วยให้ผู้เรียนสามารถระบุหัวข้อได้ชัดเจนและเฉพาะเจาะจงมากขึ้น ไม่กว้างเกินไป ตรงประเด็นและเกี่ยวข้องกับการพัฒนาภาวะผู้นำ`;
+          break;
+        case 'goal':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับเป้าหมายที่ผู้เรียนกำหนด ข้อเสนอแนะควรช่วยให้ผู้เรียนสามารถกำหนดเป้าหมายที่ชัดเจน วัดผลได้ บรรลุได้จริง มีความเกี่ยวข้อง และมีกำหนดเวลา (SMART) โดยเฉพาะอย่างยิ่งในบริบทของหัวข้อ: ${state.data.topic}`;
+          break;
+        case 'reality':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับสถานการณ์ปัจจุบันที่ผู้เรียนอธิบาย ข้อเสนอแนะควรช่วยให้ผู้เรียนสามารถประเมินสถานการณ์ปัจจุบันได้อย่างเที่ยงตรง รอบด้าน และมีการพิจารณาทั้งจุดแข็งและจุดอ่อน รวมถึงอุปสรรคที่อาจขัดขวางการบรรลุเป้าหมาย: ${state.data.goal}`;
+          break;
+        case 'options':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับทางเลือกที่ผู้เรียนเสนอ ข้อเสนอแนะควรช่วยให้ผู้เรียนสามารถค้นหาทางเลือกที่หลากหลาย สร้างสรรค์ และเป็นไปได้ในการบรรลุเป้าหมาย: ${state.data.goal} ภายใต้สถานการณ์ปัจจุบัน: ${state.data.reality}`;
+          break;
+        case 'will':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับแผนปฏิบัติการที่ผู้เรียนเสนอ ข้อเสนอแนะควรช่วยให้ผู้เรียนสามารถกำหนดแผนปฏิบัติการที่ชัดเจน มีขั้นตอนที่เป็นรูปธรรม มีกำหนดเวลา และมีวิธีวัดความสำเร็จ รวมถึงการระบุทรัพยากรที่จำเป็นและการคาดการณ์อุปสรรคที่อาจเกิดขึ้น`;
+          break;
+        case 'reflection':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเกี่ยวกับการสะท้อนคิดของผู้เรียน ข้อเสนอแนะควรช่วยให้ผู้เรียนเข้าใจลึกซึ้งถึงสิ่งที่ได้เรียนรู้จากกระบวนการโค้ชชิ่ง การเปลี่ยนแปลงในมุมมองหรือความเข้าใจ และวิธีการนำสิ่งที่ได้เรียนรู้ไปประยุกต์ใช้ในสถานการณ์จริง`;
+          break;
+        case 'final':
+          systemMessage = `คุณเป็นโค้ชมืออาชีพที่ใช้วิธี T-GROW ในการโค้ชชิ่ง กรุณาให้ข้อเสนอแนะเชิงสรุปเกี่ยวกับกระบวนการโค้ชชิ่งทั้งหมดของผู้เรียน โดยพิจารณาจากข้อมูลต่อไปนี้: หัวข้อ: ${state.data.topic}, เป้าหมาย: ${state.data.goal}, สถานการณ์ปัจจุบัน: ${state.data.reality}, ทางเลือก: ${state.data.options}, แผนปฏิบัติการ: ${state.data.will}, การสะท้อนคิด: ${state.data.reflection} ข้อเสนอแนะควรมีลักษณะเป็นการสรุปจุดแข็ง จุดที่ควรพัฒนา และคำแนะนำสำหรับการเติบโตในอนาคต`;
+          break;
+      }
+
+      const prompt = `นี่คือ${stepName === 'topic' ? 'หัวข้อ' : stepName === 'goal' ? 'เป้าหมาย' : stepName === 'reality' ? 'สถานการณ์ปัจจุบัน' : stepName === 'options' ? 'ทางเลือก' : stepName === 'will' ? 'แผนปฏิบัติการ' : stepName === 'reflection' ? 'การสะท้อนคิด' : 'ข้อมูล'}ของผู้เรียน: "${content}" กรุณาให้ข้อเสนอแนะที่เป็นประโยชน์และสร้างสรรค์`;
+
+      return await sendToAPI(prompt, systemMessage);
+    }
+
+    async function getChatResponse(userMessage) {
+      const systemMessage = `คุณเป็นโค้ชผู้นำมืออาชีพที่กำลังมีการสนทนากับผู้เรียน ผู้เรียนได้ผ่านกระบวนการ T-GROW มาแล้ว โดยมีข้อมูลดังนี้: หัวข้อ: ${state.data.topic}, เป้าหมาย: ${state.data.goal}, สถานการณ์ปัจจุบัน: ${state.data.reality}, ทางเลือก: ${state.data.options}, แผนปฏิบัติการ: ${state.data.will} กรุณาตอบคำถามหรือให้คำแนะนำในบทบาทของโค้ชที่เข้าใจบริบทของผู้เรียน ใช้คำถามปลายเปิดเพื่อกระตุ้นการคิด และเสนอมุมมองที่อาจเป็นประโยชน์ ตอบด้วยความเป็นกันเอง แต่มืออาชีพ`;
+
+      return await sendToAPI(userMessage, systemMessage);
+    }
+
+    // Event listeners for topic step
+    document.getElementById('submit-topic').addEventListener('click', async function () {
+      const topicInput = document.getElementById('topic-input').value.trim();
+
+      if (topicInput === '') {
+        alert('กรุณากรอกหัวข้อที่ต้องการพูดคุย');
+        return;
+      }
+
+      state.data.topic = topicInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('topic', topicInput);
+
+      // Display feedback
+      document.getElementById('topic-feedback').textContent = feedback;
+      document.getElementById('topic-feedback-container').classList.remove('hidden');
+
+      // Show refinement section
+      document.getElementById('topic-refinement').classList.remove('hidden');
+      document.getElementById('topic-refinements-left').textContent = state.refinements.topic;
+
+      // Reset button
+      this.textContent = 'ส่งหัวข้อ';
+      this.disabled = false;
+
+      // Show next button if refinements are 0
+      if (state.refinements.topic === 0) {
+        document.getElementById('next-to-goal').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('refine-topic').addEventListener('click', async function () {
+      if (state.refinements.topic <= 0) {
+        alert('คุณไม่สามารถปรับปรุงหัวข้อได้อีก');
+        return;
+      }
+
+      const refinementInput = document.getElementById('topic-refinement-input').value.trim();
+
+      if (refinementInput === '') {
+        alert('กรุณากรอกหัวข้อที่ต้องการปรับปรุง');
+        return;
+      }
+
+      state.data.topic = refinementInput;
+      state.refinements.topic--;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('topic', refinementInput);
+
+      // Display feedback
+      document.getElementById('topic-feedback').textContent = feedback;
+
+      // Update refinements left
+      document.getElementById('topic-refinements-left').textContent = state.refinements.topic;
+
+      // Reset button
+      this.textContent = 'ปรับปรุงหัวข้อ';
+      this.disabled = false;
+
+      // Clear input
+      document.getElementById('topic-refinement-input').value = '';
+
+      // Show next button if refinements are 0
+      if (state.refinements.topic === 0) {
+        document.getElementById('next-to-goal').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-goal').addEventListener('click', function () {
+      document.getElementById('selected-topic').textContent = state.data.topic;
+      showStep('goal');
+    });
+
+    // Event listeners for goal step
+    document.getElementById('back-to-topic').addEventListener('click', function () {
+      showStep('topic');
+    });
+
+    document.getElementById('submit-goal').addEventListener('click', async function () {
+      const goalInput = document.getElementById('goal-input').value.trim();
+
+      if (goalInput === '') {
+        alert('กรุณากรอกเป้าหมายของคุณ');
+        return;
+      }
+
+      state.data.goal = goalInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('goal', goalInput);
+
+      // Display feedback
+      document.getElementById('goal-feedback').textContent = feedback;
+      document.getElementById('goal-feedback-container').classList.remove('hidden');
+
+      // Show refinement section
+      document.getElementById('goal-refinement').classList.remove('hidden');
+      document.getElementById('goal-refinements-left').textContent = state.refinements.goal;
+
+      // Reset button
+      this.textContent = 'ส่งเป้าหมาย';
+      this.disabled = false;
+
+      // Show next button if refinements are 0
+      if (state.refinements.goal === 0) {
+        document.getElementById('next-to-reality').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('refine-goal').addEventListener('click', async function () {
+      if (state.refinements.goal <= 0) {
+        alert('คุณไม่สามารถปรับปรุงเป้าหมายได้อีก');
+        return;
+      }
+
+      const refinementInput = document.getElementById('goal-refinement-input').value.trim();
+
+      if (refinementInput === '') {
+        alert('กรุณากรอกเป้าหมายที่ต้องการปรับปรุง');
+        return;
+      }
+
+      state.data.goal = refinementInput;
+      state.refinements.goal--;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('goal', refinementInput);
+
+      // Display feedback
+      document.getElementById('goal-feedback').textContent = feedback;
+
+      // Update refinements left
+      document.getElementById('goal-refinements-left').textContent = state.refinements.goal;
+
+      // Reset button
+      this.textContent = 'ปรับปรุงเป้าหมาย';
+      this.disabled = false;
+
+      // Clear input
+      document.getElementById('goal-refinement-input').value = '';
+
+      // Show next button if refinements are 0
+      if (state.refinements.goal === 0) {
+        document.getElementById('next-to-reality').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-reality').addEventListener('click', function () {
+      document.getElementById('selected-goal').textContent = state.data.goal;
+      showStep('reality');
+    });
+
+    // Event listeners for reality step
+    document.getElementById('back-to-goal').addEventListener('click', function () {
+      showStep('goal');
+    });
+
+    document.getElementById('submit-reality').addEventListener('click', async function () {
+      const realityInput = document.getElementById('reality-input').value.trim();
+
+      if (realityInput === '') {
+        alert('กรุณากรอกสถานการณ์ปัจจุบันของคุณ');
+        return;
+      }
+
+      state.data.reality = realityInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('reality', realityInput);
+
+      // Display feedback
+      document.getElementById('reality-feedback').textContent = feedback;
+      document.getElementById('reality-feedback-container').classList.remove('hidden');
+
+      // Show refinement section
+      document.getElementById('reality-refinement').classList.remove('hidden');
+      document.getElementById('reality-refinements-left').textContent = state.refinements.reality;
+
+      // Reset button
+      this.textContent = 'ส่งสถานการณ์ปัจจุบัน';
+      this.disabled = false;
+
+      // Show next button if refinements are 0
+      if (state.refinements.reality === 0) {
+        document.getElementById('next-to-options').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('refine-reality').addEventListener('click', async function () {
+      if (state.refinements.reality <= 0) {
+        alert('คุณไม่สามารถปรับปรุงสถานการณ์ปัจจุบันได้อีก');
+        return;
+      }
+
+      const refinementInput = document.getElementById('reality-refinement-input').value.trim();
+
+      if (refinementInput === '') {
+        alert('กรุณากรอกสถานการณ์ปัจจุบันที่ต้องการปรับปรุง');
+        return;
+      }
+
+      state.data.reality = refinementInput;
+      state.refinements.reality--;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('reality', refinementInput);
+
+      // Display feedback
+      document.getElementById('reality-feedback').textContent = feedback;
+
+      // Update refinements left
+      document.getElementById('reality-refinements-left').textContent = state.refinements.reality;
+
+      // Reset button
+      this.textContent = 'ปรับปรุงสถานการณ์ปัจจุบัน';
+      this.disabled = false;
+
+      // Clear input
+      document.getElementById('reality-refinement-input').value = '';
+
+      // Show next button if refinements are 0
+      if (state.refinements.reality === 0) {
+        document.getElementById('next-to-options').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-options').addEventListener('click', function () {
+      document.getElementById('selected-reality').textContent = state.data.reality;
+      showStep('options');
+    });
+
+    // Event listeners for options step
+    document.getElementById('back-to-reality').addEventListener('click', function () {
+      showStep('reality');
+    });
+
+    document.getElementById('submit-options').addEventListener('click', async function () {
+      const optionsInput = document.getElementById('options-input').value.trim();
+
+      if (optionsInput === '') {
+        alert('กรุณากรอกทางเลือกของคุณ');
+        return;
+      }
+
+      state.data.options = optionsInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('options', optionsInput);
+
+      // Display feedback
+      document.getElementById('options-feedback').textContent = feedback;
+      document.getElementById('options-feedback-container').classList.remove('hidden');
+
+      // Show refinement section
+      document.getElementById('options-refinement').classList.remove('hidden');
+      document.getElementById('options-refinements-left').textContent = state.refinements.options;
+
+      // Reset button
+      this.textContent = 'ส่งทางเลือก';
+      this.disabled = false;
+
+      // Show next button if refinements are 0
+      if (state.refinements.options === 0) {
+        document.getElementById('next-to-will').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('refine-options').addEventListener('click', async function () {
+      if (state.refinements.options <= 0) {
+        alert('คุณไม่สามารถปรับปรุงทางเลือกได้อีก');
+        return;
+      }
+
+      const refinementInput = document.getElementById('options-refinement-input').value.trim();
+
+      if (refinementInput === '') {
+        alert('กรุณากรอกทางเลือกที่ต้องการปรับปรุง');
+        return;
+      }
+
+      state.data.options = refinementInput;
+      state.refinements.options--;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('options', refinementInput);
+
+      // Display feedback
+      document.getElementById('options-feedback').textContent = feedback;
+
+      // Update refinements left
+      document.getElementById('options-refinements-left').textContent = state.refinements.options;
+
+      // Reset button
+      this.textContent = 'ปรับปรุงทางเลือก';
+      this.disabled = false;
+
+      // Clear input
+      document.getElementById('options-refinement-input').value = '';
+
+      // Show next button if refinements are 0
+      if (state.refinements.options === 0) {
+        document.getElementById('next-to-will').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-will').addEventListener('click', function () {
+      document.getElementById('selected-options').textContent = state.data.options;
+      showStep('will');
+    });
+
+    // Event listeners for will step
+    document.getElementById('back-to-options').addEventListener('click', function () {
+      showStep('options');
+    });
+
+    document.getElementById('submit-will').addEventListener('click', async function () {
+      const willInput = document.getElementById('will-input').value.trim();
+
+      if (willInput === '') {
+        alert('กรุณากรอกแผนปฏิบัติการของคุณ');
+        return;
+      }
+
+      state.data.will = willInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('will', willInput);
+
+      // Display feedback
+      document.getElementById('will-feedback').textContent = feedback;
+      document.getElementById('will-feedback-container').classList.remove('hidden');
+
+      // Show refinement section
+      document.getElementById('will-refinement').classList.remove('hidden');
+      document.getElementById('will-refinements-left').textContent = state.refinements.will;
+
+      // Reset button
+      this.textContent = 'ส่งแผนปฏิบัติการ';
+      this.disabled = false;
+
+      // Show next button if refinements are 0
+      if (state.refinements.will === 0) {
+        document.getElementById('next-to-coach').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('refine-will').addEventListener('click', async function () {
+      if (state.refinements.will <= 0) {
+        alert('คุณไม่สามารถปรับปรุงแผนปฏิบัติการได้อีก');
+        return;
+      }
+
+      const refinementInput = document.getElementById('will-refinement-input').value.trim();
+
+      if (refinementInput === '') {
+        alert('กรุณากรอกแผนปฏิบัติการที่ต้องการปรับปรุง');
+        return;
+      }
+
+      state.data.will = refinementInput;
+      state.refinements.will--;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('will', refinementInput);
+
+      // Display feedback
+      document.getElementById('will-feedback').textContent = feedback;
+
+      // Update refinements left
+      document.getElementById('will-refinements-left').textContent = state.refinements.will;
+
+      // Reset button
+      this.textContent = 'ปรับปรุงแผนปฏิบัติการ';
+      this.disabled = false;
+
+      // Clear input
+      document.getElementById('will-refinement-input').value = '';
+
+      // Show next button if refinements are 0
+      if (state.refinements.will === 0) {
+        document.getElementById('next-to-coach').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-coach').addEventListener('click', function () {
+      // Update summary
+      document.getElementById('summary-topic').textContent = state.data.topic;
+      document.getElementById('summary-goal').textContent = state.data.goal;
+      document.getElementById('summary-reality').textContent = state.data.reality;
+      document.getElementById('summary-options').textContent = state.data.options;
+      document.getElementById('summary-will').textContent = state.data.will;
+
+      // Initialize coach chat
+      initializeCoachChat();
+
+      showStep('coach');
+    });
+
+    // Event listeners for coach step
+    document.getElementById('back-to-will').addEventListener('click', function () {
+      showStep('will');
+    });
+
+    let chatTurns = 0;
+
+    function addChatMessage(message, isUser) {
+      const chatMessages = document.getElementById('chat-messages');
+      const messageElement = document.createElement('div');
+
+      messageElement.classList.add('chat-message', isUser ? 'text-right' : 'text-left');
+      messageElement.innerHTML = `
+        <div class="${isUser ? 'bg-indigo-100 ml-auto' : 'bg-gray-100 mr-auto'} inline-block p-3 rounded-lg max-w-xs sm:max-w-sm md:max-w-md">
+          <p class="text-gray-800">${message}</p>
+        </div>
+      `;
+
+      chatMessages.appendChild(messageElement);
+
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Add animation
+      setTimeout(() => {
+        messageElement.classList.add('visible');
+      }, 10);
+
+      return messageElement;
+    }
+
+    async function initializeCoachChat() {
+      chatTurns = 0;
+
+      // Clear previous messages
+      document.getElementById('chat-messages').innerHTML = '';
+
+      // Add welcome message
+      const welcomeMessage = `สวัสดีค่ะ ฉันเป็นโค้ชของคุณ ฉันเห็นว่าคุณกำลังทำงานกับหัวข้อเกี่ยวกับ "${state.data.topic}" มีอะไรที่คุณอยากปรึกษาเกี่ยวกับแผนปฏิบัติการของคุณเพิ่มเติมไหมคะ?`;
+
+      state.data.chatMessages.push({
+        role: 'coach',
+        content: welcomeMessage
+      });
+
+      addChatMessage(welcomeMessage, false);
+    }
+
+    document.getElementById('send-message').addEventListener('click', async function () {
+      const chatInput = document.getElementById('chat-input').value.trim();
+
+      if (chatInput === '') {
+        return;
+      }
+
+      // Add user message
+      addChatMessage(chatInput, true);
+
+      // Save message
+      state.data.chatMessages.push({
+        role: 'user',
+        content: chatInput
+      });
+
+      // Clear input
+      document.getElementById('chat-input').value = '';
+
+      // Show loading state
+      this.textContent = '...';
+      this.disabled = true;
+
+      // Get response
+      const response = await getChatResponse(chatInput);
+
+      // Add coach message
+      addChatMessage(response, false);
+
+      // Save message
+      state.data.chatMessages.push({
+        role: 'coach',
+        content: response
+      });
+
+      // Reset button
+      this.textContent = 'ส่ง';
+      this.disabled = false;
+
+      // Increment chat turns
+      chatTurns++;
+
+      // If 2 turns completed, show next button
+      if (chatTurns >= 2) {
+        document.getElementById('next-to-reflection').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('next-to-reflection').addEventListener('click', function () {
+      showStep('reflection');
+    });
+
+    // Event listeners for reflection step
+    document.getElementById('back-to-coach').addEventListener('click', function () {
+      showStep('coach');
+    });
+
+    document.getElementById('submit-reflection').addEventListener('click', async function () {
+      const reflectionInput = document.getElementById('reflection-input').value.trim();
+
+      if (reflectionInput === '') {
+        alert('กรุณากรอกการสะท้อนคิดของคุณ');
+        return;
+      }
+
+      state.data.reflection = reflectionInput;
+
+      // Show loading state
+      this.textContent = 'กำลังประมวลผล...';
+      this.disabled = true;
+
+      // Get feedback
+      const feedback = await getFeedback('reflection', reflectionInput);
+
+      // Display feedback
+      document.getElementById('reflection-feedback').textContent = feedback;
+      document.getElementById('reflection-feedback-container').classList.remove('hidden');
+
+      // Reset button
+      this.textContent = 'ส่งการสะท้อนคิด';
+      this.disabled = false;
+
+      // Proceed to final step
+      setTimeout(async () => {
+        // Update final summary
+        document.getElementById('final-topic').textContent = state.data.topic;
+        document.getElementById('final-goal').textContent = state.data.goal;
+        document.getElementById('final-reality').textContent = state.data.reality;
+        document.getElementById('final-options').textContent = state.data.options;
+        document.getElementById('final-will').textContent = state.data.will;
+        document.getElementById('final-reflection').textContent = state.data.reflection;
+
+        // Get final feedback
+        const finalFeedback = await getFeedback('final', JSON.stringify(state.data));
+        document.getElementById('final-feedback').textContent = finalFeedback;
+
+        showStep('final');
+      }, 1000);
+    });
+
+    // Event listener for restart
+    document.getElementById('restart-process').addEventListener('click', function () {
+      // Reset state
+      state.currentStep = 'topic';
+      state.progress = 0;
+      state.refinements = {
+        topic: 2,
+        goal: 2,
+        reality: 2,
+        options: 2,
+        will: 2
+      };
+      state.data = {
+        topic: '',
+        goal: '',
+        reality: '',
+        options: '',
+        will: '',
+        reflection: '',
+        chatMessages: []
+      };
+
+      // Clear inputs
+      document.getElementById('topic-input').value = '';
+      document.getElementById('topic-refinement-input').value = '';
+      document.getElementById('goal-input').value = '';
+      document.getElementById('goal-refinement-input').value = '';
+      document.getElementById('reality-input').value = '';
+      document.getElementById('reality-refinement-input').value = '';
+      document.getElementById('options-input').value = '';
+      document.getElementById('options-refinement-input').value = '';
+      document.getElementById('will-input').value = '';
+      document.getElementById('will-refinement-input').value = '';
+      document.getElementById('reflection-input').value = '';
+
+      // Reset UI
+      document.getElementById('topic-feedback-container').classList.add('hidden');
+      document.getElementById('topic-refinement').classList.add('hidden');
+      document.getElementById('next-to-goal').classList.add('hidden');
+
+      document.getElementById('goal-feedback-container').classList.add('hidden');
+      document.getElementById('goal-refinement').classList.add('hidden');
+      document.getElementById('next-to-reality').classList.add('hidden');
+
+      document.getElementById('reality-feedback-container').classList.add('hidden');
+      document.getElementById('reality-refinement').classList.add('hidden');
+      document.getElementById('next-to-options').classList.add('hidden');
+
+      document.getElementById('options-feedback-container').classList.add('hidden');
+      document.getElementById('options-refinement').classList.add('hidden');
+      document.getElementById('next-to-will').classList.add('hidden');
+
+      document.getElementById('will-feedback-container').classList.add('hidden');
+      document.getElementById('will-refinement').classList.add('hidden');
+      document.getElementById('next-to-coach').classList.add('hidden');
+
+      document.getElementById('next-to-reflection').classList.add('hidden');
+      document.getElementById('reflection-feedback-container').classList.add('hidden');
+
+      // Show topic step
+      showStep('topic');
+    });
+
+    // Initialize - show topic step
+    showStep('topic');
+
+    // Add event listener for Enter key in chat
+    document.getElementById('chat-input').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        document.getElementById('send-message').click();
+      }
+    });
+  </script>
+</body>
+
+</html>
